@@ -13,14 +13,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.myapplication.Activities.ContestantsActivity;
 import com.example.myapplication.Adapters.EventAdapter;
+import com.example.myapplication.Adapters.EventsAdapter;
+import com.example.myapplication.Models.Event;
 import com.example.myapplication.R;
+import com.example.myapplication.Utils.Debugger;
 import com.example.myapplication.Utils.HttpProvider;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
+import es.dmoral.toasty.Toasty;
 
 public class EventsFragment extends Fragment {
 
@@ -34,21 +48,33 @@ public class EventsFragment extends Fragment {
     int[] eventIcon = {R.drawable.eventicon,R.drawable.eventicon2,R.drawable.eventicon3,R.drawable.eventicon2,R.drawable.eventicon4};
     View emptyIndicator;
 
+    ArrayList<Event> eventArrayList;
+    EventsAdapter eventAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_events, container, false);
         context = getContext();
         setPageTitle("Events");
 
-        HttpProvider.post(context, "event/read/", null, new AsyncHttpResponseHandler() {
+        HttpProvider.post(context, "event/read/", null, new JsonHttpResponseHandler(){
+
             @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.d("TAG", "test");
+            public void onStart() {
+                super.onStart();
+                Debugger.logD("NAG START");
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                try {
+                    eventArrayList = new Gson().fromJson(response.getJSONArray("records").toString(), new TypeToken<ArrayList<Event>>(){}.getType());
+                    readRecords();
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -62,7 +88,6 @@ public class EventsFragment extends Fragment {
 
         initializeUI();
         registerForContextMenu(listrow_events);
-        readRecords();
     }
 
     private void showEmptyListIndicator(boolean show)
@@ -77,19 +102,13 @@ public class EventsFragment extends Fragment {
         listrow_events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(view.getContext(), ContestantsActivity.class));
 
-                HttpProvider.post(context, "event/read/", null, new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        Log.d("TAG", "test");
-                    }
+                Toasty.success(context, eventAdapter.getItem(position).getName(), Toast.LENGTH_SHORT).show();
 
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+//                startActivity(new Intent(view.getContext(), ContestantsActivity.class));
 
-                    }
-                });
+
+
 
             }
         });
@@ -98,10 +117,9 @@ public class EventsFragment extends Fragment {
     }
     private void readRecords()
     {
-        EventAdapter eventAdapter = new EventAdapter(context,eventName,eventIcon,eventDate,eventTime,eventLocation);
+        eventAdapter = new EventsAdapter(context, eventArrayList );
         listrow_events.setAdapter(eventAdapter);
-
-        showEmptyListIndicator(eventName.length <= 0);
+        showEmptyListIndicator(eventArrayList.size() <= 0);
     }
 
 
