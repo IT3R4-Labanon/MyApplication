@@ -50,11 +50,18 @@ public class MainActivity extends AppCompatActivity
 
     private void checkUserSession()
     {
-        if(UserSession.isUserLoggedIn(getApplicationContext()) != null) {
-            //Toasty.success(this,"Successfully logged in", Toast.LENGTH_SHORT);
-            //openEventsFragment();
-        }else {
-            startActivity(new Intent(this, LoginActivity.class));
+//        if(UserSession.isUserLoggedIn(getApplicationContext()) != null) {
+//            //Toasty.success(this,"Successfully logged in", Toast.LENGTH_SHORT);
+//            //openEventsFragment();
+//        }else {
+//            startActivity(new Intent(this, LoginActivity.class));
+//            openEventsFragment();
+//        }
+        if (UserSession.getToken(getApplicationContext()) == null) {
+            Intent login_intent = new Intent(this, LoginActivity.class);
+            startActivity(login_intent);
+            this.finish();
+        } else {
             openEventsFragment();
         }
 
@@ -130,7 +137,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_about) {
 
         } else if (id == R.id.nav_logout) {
-            UserSession.logout(this);
+//            UserSession.logout(this);
+            UserSession.clearSession(this);
             checkUserSession();
         }
 

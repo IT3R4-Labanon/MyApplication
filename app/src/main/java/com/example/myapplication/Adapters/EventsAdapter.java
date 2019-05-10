@@ -65,20 +65,23 @@ public class EventsAdapter extends ArrayAdapter<Event> implements ListAdapter {
     View createViewFromResource(@NonNull LayoutInflater inflater, int position,
                                 @Nullable View convertView, @NonNull ViewGroup parent, int resource)
     {
-        final TextView meter;
-        final TextView date;
+        final TextView eventName;
+        final TextView eventLocation;
         final ImageView imgMemberImage;
-        Event member = readingList.get(position);
+        final TextView eventDate;
+        Event event = readingList.get(position);
 
         if(convertView == null) {
             convertView= LayoutInflater.from(mContext).inflate(R.layout.listrow_events, parent, false);
         }
 
-        meter =  convertView.findViewById(R.id.tv_eventname);
-        date = convertView.findViewById(R.id.tv_eventlocation);
+        eventName =  convertView.findViewById(R.id.tv_eventname);
+        eventDate = convertView.findViewById(R.id.tv_eventdate);
+        eventLocation = convertView.findViewById(R.id.tv_eventlocation);
 
-        meter.setText(member.getName());
-        date.setText(member.getUuid());
+        eventName.setText(event.getName());
+        //eventDate.setText(event.getUuid());
+        eventLocation.setText(event.getDescription());
 //        if (member.getMemberPhoto() != null){
 //            try {
 //                File file = new File(member.getMemberPhoto());

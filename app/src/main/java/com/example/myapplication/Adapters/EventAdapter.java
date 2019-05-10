@@ -65,3 +65,5 @@ public class EventAdapter extends BaseAdapter {
         return v;
     }
 }
+
+//SAMPLE NI SYA

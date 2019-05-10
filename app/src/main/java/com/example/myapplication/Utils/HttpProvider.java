@@ -18,6 +18,7 @@ public class HttpProvider {
 
     public static void post(Context context, String url, StringEntity entity, AsyncHttpResponseHandler responseHandler)
     {
+        //client.addHeader("Authorization","Token " + UserSession.getToken(context));
         client.addHeader("Authorization","Token " + "bee7a589326566344043a5940472415178759df2");
         client.addHeader("Content-Type", "application/x-www-form-urlencoded");
         client.addHeader("User-Agent","Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
@@ -26,6 +27,7 @@ public class HttpProvider {
 
     public static void get(Context context, String url, RequestParams params, JsonHttpResponseHandler jsonHttpResponseHandler)
     {
+        //client.addHeader("Authorization","Token " + UserSession.getToken(context));
         client.addHeader("Authorization","Token " + "bee7a589326566344043a5940472415178759df2");
         client.addHeader("Content-Type", "application/x-www-form-urlencoded");
         client.setMaxRetriesAndTimeout(2, 5);

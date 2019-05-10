@@ -32,9 +32,11 @@ import android.widget.Toast;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.Utils.HttpProvider;
 import com.example.myapplication.Utils.UserSession;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,6 +44,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 import es.dmoral.toasty.Toasty;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -78,14 +82,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         context = this;
-        // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.et_username);
-//        populateAutoComplete();
 
         getSupportActionBar().hide();
 
         context = this;
 
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.et_username);
         mPasswordView = (EditText) findViewById(R.id.et_password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -160,54 +162,117 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+        try {
+            if (mAuthTask != null) {
+                return;
+            }
 
-        // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
+            // Reset errors.
+            mEmailView.setError(null);
+            mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+            // Store values at the time of the login attempt.
+            String email = mEmailView.getText().toString();
+            String password = mPasswordView.getText().toString();
 
-        boolean cancel = false;
-        View focusView = null;
+            boolean cancel = false;
+            View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
+            // Check for a valid password, if the user entered one.
+            if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+                mPasswordView.setError(getString(R.string.error_invalid_password));
+                focusView = mPasswordView;
+                cancel = true;
+            }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
+            // Check for a valid email address.
+            if (TextUtils.isEmpty(email)) {
+                mEmailView.setError(getString(R.string.error_field_required));
+                focusView = mEmailView;
+                cancel = true;
+            } else if (!isEmailValid(email)) {
+                mEmailView.setError(getString(R.string.error_invalid_email));
+                focusView = mEmailView;
+                cancel = true;
+            }
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute();
+            if (cancel) {
+                // There was an error; don't attempt login and focus the first
+                // form field with an error.
+                focusView.requestFocus();
+            } else {
+                // Show a progress spinner, and kick off a background task to
+                // perform the user login attempt.
+//                showProgress(true);
+//                mAuthTask = new UserLoginTask(email, password);
+//                mAuthTask.execute();
 
+                showProgress(true);
+
+                JSONObject jsonParams = new JSONObject();
+
+                jsonParams.put("username", email);
+                jsonParams.put("password", password);
+
+                StringEntity entity = new StringEntity(jsonParams.toString());
+                doLogin(entity);
+
+            }
+        } catch (Exception err)
+        {
+            Toasty.error(getApplicationContext(), err.toString()).show();
         }
     }
 
+    private void doLogin(StringEntity stringEntity)
+    {
+        HttpProvider.post(getApplicationContext(), "login_mobile/", stringEntity,"application/json", new JsonHttpResponseHandler(){
 
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                Toasty.success(getApplicationContext(), "You are now logged in",Toast.LENGTH_SHORT).show();
+                UserSession session = new Gson().fromJson(response.toString(), new TypeToken<UserSession>(){}.getType());
+                session.saveUserSession(getApplicationContext());
+                Intent main_intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(main_intent);
+                finish();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Toasty.error(context, "Error 1").show();
+                showProgress(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Toasty.error(context, "Error 2").show();
+                showProgress(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Toasty.error(context, "Error 3").show();
+                showProgress(false);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                super.onSuccess(statusCode, headers, responseString);
+            }
+        });
+
+
+    }
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
@@ -367,4 +432,3 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
         }
     }
 }
-
