@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,10 @@ import android.widget.ListView;
 import com.example.myapplication.Activities.ContestantsActivity;
 import com.example.myapplication.Adapters.EventAdapter;
 import com.example.myapplication.R;
+import com.example.myapplication.Utils.HttpProvider;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
+import cz.msebera.android.httpclient.Header;
 
 public class EventsFragment extends Fragment {
 
@@ -34,6 +39,19 @@ public class EventsFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_events, container, false);
         context = getContext();
         setPageTitle("Events");
+
+        HttpProvider.post(context, "event/read/", null, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.d("TAG", "test");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+            }
+        });
+
         return view;
 
     }
@@ -60,6 +78,19 @@ public class EventsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 startActivity(new Intent(view.getContext(), ContestantsActivity.class));
+
+                HttpProvider.post(context, "event/read/", null, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        Log.d("TAG", "test");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                    }
+                });
+
             }
         });
 
