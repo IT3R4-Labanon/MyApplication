@@ -111,17 +111,18 @@ public class CriteriaActivity extends AppCompatActivity {
         btn_cancel = (Button) inputscoreDialog.findViewById(R.id.btn_cancel);
        // et_inputscore = (EditText) inputscoreDialog.findViewById(R.id.et_inputscore);
 
-//        btn_save.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(et_inputscore.getText().toString() == null) {
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                if(et_inputscore.getText() == null) {
 //                    Toasty.warning(context,"Please input your score",Toast.LENGTH_SHORT);
 //                } else {
-//                    inputscoreDialog.dismiss();
-//                    Toasty.success(context,"Saved successfully", Toast.LENGTH_SHORT);
+                    inputscoreDialog.dismiss();
+                    Toasty.success(context,"Saved successfully", Toast.LENGTH_SHORT);
+
 //                }
-//            }
-//        });
+            }
+        });
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
