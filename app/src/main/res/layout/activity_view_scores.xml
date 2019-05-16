@@ -35,7 +35,7 @@
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:queryHint="Search contestant" />
+                android:queryHint="Search results" />
         </LinearLayout>
 
         <LinearLayout

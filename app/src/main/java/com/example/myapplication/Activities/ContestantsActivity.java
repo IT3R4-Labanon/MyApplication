@@ -40,8 +40,6 @@ public class ContestantsActivity extends AppCompatActivity {
     ContestantAdapter contestantAdapter;
 
     private SearchView etSearch;
-    private static String POPUP_CONSTANT = "mPopup";
-    private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +82,7 @@ public class ContestantsActivity extends AppCompatActivity {
             }
         });
 
-
-
     }
-
 
     public void onStart() {
         super.onStart();
@@ -133,6 +128,8 @@ public class ContestantsActivity extends AppCompatActivity {
         lv_contestants.setAdapter(contestantAdapter);
         showEmptyListIndicator(contestantArrayList.size() <= 0);
     }
+
+    //para sa pop up dialog (input scores and view results)
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
