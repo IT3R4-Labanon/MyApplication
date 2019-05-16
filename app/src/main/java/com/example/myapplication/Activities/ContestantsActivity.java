@@ -11,11 +11,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.myapplication.Adapters.ContestantAdapter;
 import com.example.myapplication.Models.Contestants;
-import com.example.myapplication.Models.Event;
 import com.example.myapplication.R;
 import com.example.myapplication.Utils.Debugger;
 import com.example.myapplication.Utils.HttpProvider;
@@ -39,7 +39,7 @@ public class ContestantsActivity extends AppCompatActivity {
     ArrayList<Contestants> contestantArrayList;
     ContestantAdapter contestantAdapter;
 
-
+    private SearchView etSearch;
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
 
@@ -68,7 +68,7 @@ public class ContestantsActivity extends AppCompatActivity {
             @Override
             public void onStart() {
                 super.onStart();
-                Debugger.logD("NAG START");
+                Debugger.logD("CONTESTANTS NI");
             }
 
             @Override
@@ -76,7 +76,7 @@ public class ContestantsActivity extends AppCompatActivity {
                 super.onSuccess(statusCode, headers, response);
                 try {
                     contestantArrayList = new Gson().fromJson(response.getJSONArray("records").toString(), new TypeToken<ArrayList<Contestants>>(){}.getType());
-                    readRecords();
+                    readRecords("");
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -104,6 +104,7 @@ public class ContestantsActivity extends AppCompatActivity {
     {
         lv_contestants = (ListView) findViewById(R.id.lv_contestants);
         emptyIndicator = (View) findViewById(R.id.viewEmptyListIndicator);
+        etSearch = (SearchView)  findViewById(R.id.etSearch);
 
         lv_contestants.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -113,8 +114,20 @@ public class ContestantsActivity extends AppCompatActivity {
             }
         });
 
+        etSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                readRecords(s);
+                return true;
+            }
+        });
     }
-    private void readRecords()
+    private void readRecords(String search)
     {
         contestantAdapter = new ContestantAdapter(context, contestantArrayList );
         lv_contestants.setAdapter(contestantAdapter);

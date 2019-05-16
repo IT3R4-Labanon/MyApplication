@@ -51,19 +51,12 @@ public class MainActivity extends AppCompatActivity
 
     private void checkUserSession()
     {
-//        if(UserSession.isUserLoggedIn(getApplicationContext()) != null) {
-//            //Toasty.success(this,"Successfully logged in", Toast.LENGTH_SHORT);
-//            //openEventsFragment();
-//        }else {
-//            startActivity(new Intent(this, LoginActivity.class));
-        openEventsFragment();
-//        }
 //        if (UserSession.getToken(getApplicationContext()) == null) {
 //            Intent login_intent = new Intent(this, LoginActivity.class);
 //            startActivity(login_intent);
 //            this.finish();
 //        } else {
-            //startActivity(new Intent(getApplicationContext(), ContestantsActivity.class));
+            openEventsFragment();
 //        }
 
     }
