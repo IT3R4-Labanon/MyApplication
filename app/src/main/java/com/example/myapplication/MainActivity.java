@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
+import com.example.myapplication.Activities.ContestantsActivity;
 import com.example.myapplication.Activities.LoginActivity;
 import com.example.myapplication.Fragments.EventsFragment;
 import com.example.myapplication.Utils.UserSession;
@@ -55,15 +56,15 @@ public class MainActivity extends AppCompatActivity
 //            //openEventsFragment();
 //        }else {
 //            startActivity(new Intent(this, LoginActivity.class));
-//            openEventsFragment();
+        openEventsFragment();
 //        }
-        if (UserSession.getToken(getApplicationContext()) == null) {
-            Intent login_intent = new Intent(this, LoginActivity.class);
-            startActivity(login_intent);
-            this.finish();
-        } else {
-            openEventsFragment();
-        }
+//        if (UserSession.getToken(getApplicationContext()) == null) {
+//            Intent login_intent = new Intent(this, LoginActivity.class);
+//            startActivity(login_intent);
+//            this.finish();
+//        } else {
+            //startActivity(new Intent(getApplicationContext(), ContestantsActivity.class));
+//        }
 
     }
     private void openEventsFragment()

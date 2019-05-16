@@ -1,46 +1,45 @@
 package com.example.myapplication.Activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.PopupMenu;
+import android.widget.Toast;
 
-import com.example.myapplication.Adapters.ContestantsAdapter;
-import com.example.myapplication.MainActivity;
+import com.example.myapplication.Adapters.ContestantAdapter;
+import com.example.myapplication.Models.Contestants;
+import com.example.myapplication.Models.Event;
 import com.example.myapplication.R;
-import com.example.myapplication.Utils.UserSession;
+import com.example.myapplication.Utils.Debugger;
+import com.example.myapplication.Utils.HttpProvider;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
+import es.dmoral.toasty.Toasty;
 
 public class ContestantsActivity extends AppCompatActivity {
 
     Context context;
     ListView lv_contestants;
-    String[] conName={"Catriona M. Gray","Pia P. Wurtzbach","Juani J. Juani","Juana J. Juana","Venus V. Raj"};
-    String[] conAge={"23","19","25","21","26"};
-    String[] conAddress={"Cagayan de Oro City","Quezon City","Cebu","Tarlac City","Isabela  City"};
-    String[] conScore={"99%","85%","90%","87%","95%"};
-    int[] conIcon = {R.drawable.con_icon1,R.drawable.con_icon2,R.drawable.con_icon3,R.drawable.con_icon4,R.drawable.con_icon2};
     View emptyIndicator;
+    ArrayList<Contestants> contestantArrayList;
+    ContestantAdapter contestantAdapter;
+
+
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
 
@@ -62,16 +61,39 @@ public class ContestantsActivity extends AppCompatActivity {
             }
         });
 
-        onStart();
+
+
+        HttpProvider.post(context, "contestants/read/", null, new JsonHttpResponseHandler(){
+
+            @Override
+            public void onStart() {
+                super.onStart();
+                Debugger.logD("NAG START");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                try {
+                    contestantArrayList = new Gson().fromJson(response.getJSONArray("records").toString(), new TypeToken<ArrayList<Contestants>>(){}.getType());
+                    readRecords();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+
     }
+
 
     public void onStart() {
         super.onStart();
 
         initializeUI();
-        readRecords();
         registerForContextMenu(lv_contestants);
-
     }
 
     private void showEmptyListIndicator(boolean show)
@@ -86,17 +108,17 @@ public class ContestantsActivity extends AppCompatActivity {
         lv_contestants.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-              lv_contestants.showContextMenu();
+                lv_contestants.showContextMenu();
+                Toasty.success(context, contestantAdapter.getItem(position).getName(), Toast.LENGTH_SHORT).show();
             }
         });
 
     }
     private void readRecords()
     {
-        ContestantsAdapter contestantsAdapter = new ContestantsAdapter(context,conName,conIcon,conAge,conAddress,conScore);
-        lv_contestants.setAdapter(contestantsAdapter);
-
-        showEmptyListIndicator(conName.length <= 0);
+        contestantAdapter = new ContestantAdapter(context, contestantArrayList );
+        lv_contestants.setAdapter(contestantAdapter);
+        showEmptyListIndicator(contestantArrayList.size() <= 0);
     }
 
     @Override
