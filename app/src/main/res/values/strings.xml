@@ -30,5 +30,12 @@
 
     <string name="event_name">Event Name</string>
 
+    <string-array name="categories">
+        <item>Select Category</item>
+        <item>Just Two Minutes</item>
+        <item>Debate</item>
+        <item>Speech Reading</item>
+    </string-array>
+
 
 </resources>

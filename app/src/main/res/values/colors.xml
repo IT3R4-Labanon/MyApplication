@@ -5,5 +5,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorHint">#ECE1CE</color>
     <color name="white">#FFF</color>
-    <color name="mr">#400706</color>
+    <color name="maroon">#400706</color>
+    <color name="black">#000</color>
+    <color name="gray">#808080</color>
 </resources>

@@ -39,7 +39,7 @@ public class CriteriaActivity extends AppCompatActivity {
     Button btn_save,btn_cancel;
     String[] criteriaName={"CRITERIA NO. 1","CRITERIA NO. 2","CRITERIA NO. 3","CRITERIA NO. 4"};
     String[] criteriaTotal={"30%","20%","40%","10%"};
-    String[] criteriaInputScore={"0","20","85","0"};
+    String[] criteriaInputScore={"0","0","0","0"};
     String[] scores = {"1","2","3"};
     Dialog inputscoreDialog;
 
